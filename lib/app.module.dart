@@ -10,26 +10,28 @@ import 'package:ventura_hr_front/services/dio.service.dart';
 class AppModule extends Module {
   @override
   final List<Bind> binds = [
+    Bind<Dio>((e) => Dio(), isSingleton: false),
     BindInject<DioService>(
       (inject) => DioService(inject<Dio>(), inject<AppStore>()),
-      isSingleton: false,
+      
     ),
+    
     Bind.singleton((i) => AppStore()),
   ];
 
   @override
   final List<ModularRoute> routes = [
-    ChildRoute('/1',
+    ChildRoute('/',
         child: (_, __) => LoginPage(appStore: Modular.get<AppStore>())),
     ChildRoute('/cadastro', child: (_, __) => CadastroPage()),
     ChildRoute('/empresa-home',
         child: (_, __) => HomeEmpresa(
             appStore: Modular.get<AppStore>(),
             dioService: Modular.get<DioService>())),
-    ChildRoute('/',
+    ChildRoute('/cadastro-vaga',
         child: (_, __) => CadastroVaga(
-              // appStore: Modular.get<AppStore>(),
-              // dioService: Modular.get<DioService>(),
+              appStore: Modular.get<AppStore>(),
+              dioService: Modular.get<DioService>(),
             ))
   ];
 }

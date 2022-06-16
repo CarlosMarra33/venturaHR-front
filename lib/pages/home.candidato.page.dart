@@ -6,7 +6,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:ventura_hr_front/services/dio.service.dart';
 import 'package:ventura_hr_front/models/usuario.dart';
 import 'package:ventura_hr_front/models/vaga.dart';
-import 'package:ventura_hr_front/pages/card.home.widget.dart';
+import 'package:ventura_hr_front/components/card.home.widget.dart';
 
 import '../services/app.store.dart';
 

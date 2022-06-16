@@ -91,7 +91,6 @@ class _CadastroPageState extends State<CadastroPage> {
                       var response = Dio().post(
                           'http://192.168.0.48:8081/cadastro',
                           data: user.toJson());
-                      // print(response);
                     } catch (e) {
                       debugPrint(e.toString());
                     }
