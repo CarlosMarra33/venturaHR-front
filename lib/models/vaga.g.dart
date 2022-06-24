@@ -7,23 +7,27 @@ part of 'vaga.dart';
 // **************************************************************************
 
 Vaga _$VagaFromJson(Map<String, dynamic> json) => Vaga(
+      email: json['email'] as String,
+      vagaId: json['vagaId'] as int?,
       titulo: json['titulo'] as String,
       cargo: json['cargo'] as String,
       status: json['status'] as int,
-      destricao: json['destricao'] as String,
-      dataModificacao: DateTime.parse(json['dataModificacao'] as String),
-      pesos: (json['pesos'] as List<dynamic>?)?.map((e) => e as int).toList(),
-      skillNames: (json['skillNames'] as List<dynamic>?)
-          ?.map((e) => e as String)
+      descricao: json['descricao'] as String,
+      dataCriacao: json['dataCriacao'] == null
+          ? null
+          : DateTime.parse(json['dataCriacao'] as String),
+      criterios: (json['criterios'] as List<dynamic>)
+          .map((e) => Criterio.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
 Map<String, dynamic> _$VagaToJson(Vaga instance) => <String, dynamic>{
+      'vagaId': instance.vagaId,
+      'email': instance.email,
       'titulo': instance.titulo,
       'cargo': instance.cargo,
-      'destricao': instance.destricao,
-      'dataModificacao': instance.dataModificacao.toIso8601String(),
+      'descricao': instance.descricao,
+      'dataCriacao': instance.dataCriacao?.toIso8601String(),
       'status': instance.status,
-      'skillNames': instance.skillNames,
-      'pesos': instance.pesos,
+      'criterios': instance.criterios,
     };

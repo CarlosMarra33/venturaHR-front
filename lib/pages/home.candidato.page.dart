@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:ventura_hr_front/services/dio.service.dart';
 import 'package:ventura_hr_front/models/usuario.dart';
@@ -14,9 +15,7 @@ class HomeCandidato extends StatefulWidget {
   final DioService dioService;
   final AppStore appStore;
 
-  const HomeCandidato(
-      {Key? key, required this.dioService, required this.appStore})
-      : super(key: key);
+  const HomeCandidato({Key? key, required this.dioService, required this.appStore}) : super(key: key);
 
   @override
   State<HomeCandidato> createState() => _HomeCandidatoState();
@@ -25,41 +24,86 @@ class HomeCandidato extends StatefulWidget {
 class _HomeCandidatoState extends State<HomeCandidato> {
   var response;
   Usuario? usuario;
-  List<Vaga> vagasList = [];
+  List<Vaga> filteredList = [];
+  TextEditingController editingController = TextEditingController();
   @override
   void initState() {
     usuario = widget.appStore.usuario;
-    response = widget.dioService
-        .get('http://192.168.0.48:8081/candidato/home?email=' + usuario!.email!);
-    List<dynamic> vagasmap = jsonDecode(response);
-    vagasmap.map((vaga) => vagasList.add(Vaga.fromJson(vaga)));
+    if (filteredList.length == 0) {
+      filteredList = widget.appStore.vagas!;
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Center(child: Text('VenturaHR'))),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ListView.builder(itemBuilder: ((context, index) {
-              return CardHomeWidget(vaga: vagasList[index]);
-            }))
-          ],
-        ),
-      ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: () {},
-      //   icon: const Icon(Icons.add),
-      //   label: const Text(
-      //     'Criar Vaga',
-      //     style: TextStyle(
-      //       letterSpacing: 0,
-      //       fontWeight: FontWeight.bold,
-      //     ),
-      //   ),
-      // ),
+      backgroundColor: Colors.blueAccent[200],
+      appBar: AppBar(
+          title: Center(child: Text('VenturaHR')),
+          leading: InkWell(
+              onTap: () {
+                Modular.to.navigate("/");
+              },
+              child: Icon(Icons.exit_to_app))),
+      body: Observer(builder: (_) {
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  onChanged: (value) {
+                    List<Vaga> newList = [];
+                    for (var vaga in widget.appStore.vagas!) {
+                      if (vaga.cargo.contains(value)) {
+                        newList.add(vaga);
+                      }
+                    }
+                    setState(() {
+                      filteredList = newList;
+                    });
+                  },
+                  controller: editingController,
+                  decoration: InputDecoration(
+                    iconColor: Colors.white,
+                    prefixIconColor: Colors.white,
+                    suffixIconColor: Colors.white,
+                    fillColor: Colors.white,
+                    focusColor: Colors.white,
+                    hoverColor: Colors.white,
+                    labelText: "Search",
+                    hintText: "",
+                    labelStyle: TextStyle(color: Colors.white),
+                    floatingLabelStyle: TextStyle(color: Colors.white),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              widget.appStore.isVagasLoaded
+                  ? ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: filteredList.length,
+                      itemBuilder: ((context, index) {
+                        return InkWell(
+                          onTap: () {
+                            widget.appStore.vagaSelecionada = filteredList[index];
+                            Modular.to.pushNamed('/detalhes-vaga');
+                          },
+                          child: CardHomeWidget(
+                            vaga: filteredList[index],
+                          ),
+                        );
+                      }))
+                  : Center(child: CircularProgressIndicator())
+            ],
+          ),
+        );
+      }),
     );
   }
 }

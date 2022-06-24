@@ -1,24 +1,31 @@
 import 'package:json_annotation/json_annotation.dart';
+
+import 'criterio.dart';
 part 'vaga.g.dart';
 
 @JsonSerializable()
 class Vaga {
+  int? vagaId;
+  String email;
   String titulo;
   String cargo;
-  String destricao;
-  DateTime dataModificacao;
+  String descricao;
+  DateTime? dataCriacao;
   int status;
-  List<String>? skillNames;
-  List<int>? pesos;
+  List<Criterio> criterios;
+  // List<String>? skillNames;
+  // List<int>? pesos;
 
-  Vaga(
-      {required this.titulo,
-      required this.cargo,
-      required this.status,
-      required this.destricao,
-      required this.dataModificacao,
-      this.pesos,
-      this.skillNames});
+  Vaga({
+    required this.email,
+    this.vagaId,
+    required this.titulo,
+    required this.cargo,
+    required this.status,
+    required this.descricao,
+    this.dataCriacao,
+    required this.criterios,
+  });
 
   factory Vaga.fromJson(Map<String, dynamic> json) => _$VagaFromJson(json);
 
